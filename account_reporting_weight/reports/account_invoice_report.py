@@ -19,7 +19,8 @@ class AccountInvoiceReport(models.Model):
                     (product.weight *
                     (CASE WHEN move.move_type IN
                     ('in_invoice','out_refund','in_receipt') THEN -1 ELSE 1 END)
-                    * line.quantity / uom_line.factor * uom_template.factor),
+                    * line.quantity * COALESCE(uom_line.factor, 1)
+                    / NULLIF(COALESCE(uom_template.factor, 1), 0.0)),
                     0.0
                 ) as weight
             """,
